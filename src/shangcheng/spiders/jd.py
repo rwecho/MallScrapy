@@ -8,10 +8,11 @@ class JdSpider(Spider):
     name = 'jd'
     allowed_domains = ['search.jd.com']
     start_urls = ['https://search.jd.com/Search?keyword=手机&enc=utf-8']
+    mall_type = "jd"
 
     def start_requests(self):
         for url in self.start_urls:
-            yield Request(url=url, callback=self.parse, meta={'type': 'jd'}, dont_filter=True)
+            yield Request(url=url, callback=self.parse, meta={}, dont_filter=True)
 
     def parse(self, response):
         products = response.xpath('.//ul[@class="gl-warp clearfix"]/li')

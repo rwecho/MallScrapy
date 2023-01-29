@@ -15,6 +15,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 from selenium import webdriver
 from faker import Faker
+import os
 
 
 class ShangchengSpiderMiddleware:
@@ -71,6 +72,8 @@ class ShangchengDownloaderMiddleware:
     def __init__(self) -> None:
         self.timeout = 60
         options = webdriver.ChromeOptions()
+        dir_path = os.getcwd()
+        options.add_argument(f"user-data-dir={dir_path}/selenium")
         # 设置中文
         # options.add_argument('lang=zh_CN.UTF-8')
         # 设置无图加载，提高速度
@@ -95,7 +98,7 @@ class ShangchengDownloaderMiddleware:
         # Called for each request that goes through the downloader
         # middleware.
 
-        _type = request.meta['type']
+        _type = spider.mall_type
 
         self.browser.get(request.url)
         self.browser.execute_script(
@@ -112,7 +115,8 @@ class ShangchengDownloaderMiddleware:
             self.wait.until(EC.presence_of_element_located(
                 (By.XPATH, './/ul[@class="gl-warp clearfix"]/li')))
         elif _type == "duoduo":
-            pass
+            self.wait.until(EC.presence_of_element_located(
+                (By.XPATH, './/div[@class="_3glhOBhU"]')))
         else:
             raise NotImplementedError(f"Unknow type {_type}")
 
