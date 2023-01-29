@@ -1,1 +1,3 @@
-faker
+Scrapy==2.7.1
+scrapy-selenium==0.0.7
+Faker==16.6.1
