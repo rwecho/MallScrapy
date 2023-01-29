@@ -11,7 +11,7 @@
       "module": "scrapy",
       "args": ["runspider", "${file}"],
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/src",
+      "cwd": "${workspaceFolder}/spider",
       "justMyCode": true
     }
   ]

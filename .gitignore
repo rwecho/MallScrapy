@@ -1,3 +1,3 @@
 *.pyc
-src/selenium
-src/app_data
+spider/selenium
+spider/app_data
