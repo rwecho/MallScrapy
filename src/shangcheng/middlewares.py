@@ -69,13 +69,13 @@ class ShangchengDownloaderMiddleware:
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
     def __init__(self) -> None:
-        self.timeout = 20
+        self.timeout = 60
         options = webdriver.ChromeOptions()
         # 设置中文
         # options.add_argument('lang=zh_CN.UTF-8')
         # 设置无图加载，提高速度
-        prefs = {"profile.managed_default_content_settings.images": 2}
-        options.add_experimental_option("prefs", prefs)
+        # prefs = {"profile.managed_default_content_settings.images": 2}
+        # options.add_experimental_option("prefs", prefs)
         # 设置无头浏览器
         # options.add_argument('--headless')
         self.browser = webdriver.Chrome(chrome_options=options)
@@ -104,8 +104,18 @@ class ShangchengDownloaderMiddleware:
         # time.sleep(2)  # 等待所有元素加载完成
 
         # 等待加载完所有的商品list 然后进一步解析
-        self.wait.until(EC.presence_of_element_located(
-            (By.XPATH, './/ul[@class="gl-warp clearfix"]/li')))
+
+        if _type == "tmall":
+            self.wait.until(EC.presence_of_element_located(
+                (By.XPATH, './/div[@class="grid g-clearfix"]')))
+        elif _type == "jd":
+            self.wait.until(EC.presence_of_element_located(
+                (By.XPATH, './/ul[@class="gl-warp clearfix"]/li')))
+        elif _type == "duoduo":
+            pass
+        else:
+            raise NotImplementedError(f"Unknow type {_type}")
+
         return HtmlResponse(url=request.url, body=self.browser.page_source, request=request, encoding='utf-8', status=200)
 
     def process_response(self, request, response, spider):
