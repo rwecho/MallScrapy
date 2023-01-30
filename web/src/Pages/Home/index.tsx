@@ -113,6 +113,8 @@ export const Home = () => {
     loadData(mall, date)
   }, [mall, date])
 
+  const keywords = process.env.REACT_APP_PRODUCT_KEYWORDS
+
   const columns: Column<any>[] = [
     {
       Header: '序号',
@@ -158,7 +160,7 @@ export const Home = () => {
       Cell: ({ cell }) => {
         const item = cell.row.original
         let color = ''
-        if (item.store.includes('小米')) {
+        if (item.store.includes(keywords)) {
           color = 'teal.400'
         }
 
@@ -172,7 +174,7 @@ export const Home = () => {
         const item = cell.row.original
 
         let color = ''
-        if (item.store.includes('小米')) {
+        if (item.store.includes(keywords)) {
           color = 'teal.400'
         }
 
