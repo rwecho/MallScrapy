@@ -20,14 +20,15 @@ class ShangchengPipeline:
         pass
 
     def process_item(self, item, spider):
-        self.items.append(dict(item))
+
+        self.items.append({**dict(item), 'index': len(self.items)})
         return item
 
     def close_spider(self, spider):
         _type = spider.mall_type
         now = datetime.now().strftime("%Y-%m-%d")
 
-        file = os.path.join(os.getcwd(), "app_data")
+        file = os.path.join(os.getcwd(), "..", "web", "public", "app_data")
         if not os.path.exists(file):
             os.mkdir(file)
         if _type == "tmall":
