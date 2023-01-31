@@ -101,10 +101,12 @@ class ShangchengDownloaderMiddleware:
         _type = spider.mall_type
 
         self.browser.get(request.url)
-        self.browser.execute_script(
-            'window.scrollTo(0,document.body.scrollHeight)')
 
-        # time.sleep(2)  # 等待所有元素加载完成
+        for i in range(3):
+            self.browser.execute_script(
+                'window.scrollTo(0,document.body.scrollHeight)')
+
+            time.sleep(1)  # 等待所有元素加载完成
 
         # 等待加载完所有的商品list 然后进一步解析
 

@@ -5,40 +5,44 @@
 
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
-import json
-import os
 from datetime import datetime
+import pymongo
+
+from .settings import MONGO_CONNECTION
 
 
 class ShangchengPipeline:
 
     def __init__(self):
         self.items = []
+        client = pymongo.MongoClient(MONGO_CONNECTION)
+        scrapy_db = client['scrapy_mall']                # 创建数据库
+        self.coll = scrapy_db['products']              # 创建jd表格
+        self.index = 0
+        self.date = datetime.now()
 
     def open_spider(self, spider):
-        pass
+        _type = spider.mall_type
+        keywords = spider.keywords
+        day = self.date.strftime("%Y-%m-%d")
+        self.coll.delete_many({"keywords": keywords,
+                               "type": _type,
+                               'creation_day': day, })
 
     def process_item(self, item, spider):
+        _type = spider.mall_type
+        keywords = spider.keywords
+        day = self.date.strftime("%Y-%m-%d")
 
-        self.items.append({**dict(item), 'index': len(self.items)})
+        item = {**dict(item),
+                'index': self.index,
+                'creation': self.date,
+                'creation_day': day,
+                'keywords': keywords,
+                "type": _type}
+        self.coll.insert_one(dict(item))
+        self.index += 1
         return item
 
     def close_spider(self, spider):
-        _type = spider.mall_type
-        now = datetime.now().strftime("%Y-%m-%d")
-
-        file = os.path.join(os.getcwd(), "..", "web", "public", "app_data")
-        if not os.path.exists(file):
-            os.mkdir(file)
-        if _type == "tmall":
-            file = os.path.join(file, f"tmall_{now}.json")
-        elif _type == "jd":
-            file = os.path.join(file, f"jd_{now}.json")
-        elif _type == "duoduo":
-            file = os.path.join(file, f"duoduo_{now}.json")
-        else:
-            raise NotImplementedError(f"Unknow type {_type}")
-
-        with open(file, 'w') as f:
-            json.dump(self.items, f)
+        self.client.close()

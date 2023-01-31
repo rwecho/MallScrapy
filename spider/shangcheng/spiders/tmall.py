@@ -1,17 +1,19 @@
 import scrapy
 from scrapy import Request, Spider
 from shangcheng.items import ShangchengItem
+from shangcheng.settings import SEARCH_KEYWORDS
 
 
 class TmallSpider(scrapy.Spider):
     name = 'tmall'
     allowed_domains = ['s.taobao.com']
-    start_urls = ['https://s.taobao.com/search?q=手机']
+    keywords = SEARCH_KEYWORDS
+    start_urls = [f'https://s.taobao.com/search?q={keywords}']
     mall_type = "tmall"
 
     def start_requests(self):
         for url in self.start_urls:
-            yield Request(url=url, callback=self.parse, meta={ }, dont_filter=True)
+            yield Request(url=url, callback=self.parse, meta={}, dont_filter=True)
 
     def parse(self, response):
         products = response.xpath(

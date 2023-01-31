@@ -2,12 +2,14 @@ import scrapy
 
 from shangcheng.items import ShangchengItem
 from scrapy import Request, Spider
+from shangcheng.settings import SEARCH_KEYWORDS
 
 
 class JdSpider(Spider):
     name = 'jd'
     allowed_domains = ['search.jd.com']
-    start_urls = ['https://search.jd.com/Search?keyword=手机&enc=utf-8']
+    keywords = SEARCH_KEYWORDS
+    start_urls = [f'https://search.jd.com/Search?keyword={keywords}&enc=utf-8']
     mall_type = "jd"
 
     def start_requests(self):

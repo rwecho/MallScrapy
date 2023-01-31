@@ -1,14 +1,16 @@
 import scrapy
 from scrapy import Request, Spider
 from shangcheng.items import ShangchengItem
+from shangcheng.settings import SEARCH_KEYWORDS
 
 
 class DuoduoSpider(scrapy.Spider):
     name = 'duoduo'
     allowed_domains = ['mobile.yangkeduo.com']
-    start_urls = ['https://mobile.yangkeduo.com/search_result.html?search_key=手机']
+    keywords = SEARCH_KEYWORDS
+    start_urls = [
+        f'https://mobile.yangkeduo.com/search_result.html?search_key={keywords}']
     mall_type = "duoduo"
-
 
     def start_requests(self):
         for url in self.start_urls:
