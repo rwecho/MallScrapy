@@ -6,7 +6,6 @@ import os
 from scrapy.utils.log import configure_logging
 
 
-
 def crawl_job():
     """
     Job to start spiders.
@@ -36,7 +35,7 @@ def crawl():
     # crawl_job() returns a Deferred
     d = crawl_job()
     # call schedule_next_crawl(<scrapy response>, n) after crawl job is complete
-    d.addCallback(schedule_next_crawl, 30)
+    d.addCallback(schedule_next_crawl, 60)  # unit: second
     d.addErrback(catch_error)
 
 
