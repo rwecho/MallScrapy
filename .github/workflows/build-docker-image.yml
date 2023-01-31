@@ -1,0 +1,58 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v1
+        with:
+          envkey_REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+          envkey_REACT_APP_AUTH_URL: ${{ secrets.REACT_APP_AUTH_URL }}
+          envkey_REACT_APP_AUTH_REDIRECT_URI: ${{ secrets.REACT_APP_AUTH_REDIRECT_URI }}
+          envkey_REACT_APP_AUTH_CLIENT_ID: ${{ secrets.REACT_APP_AUTH_CLIENT_ID }}
+          envkey_REACT_APP_AUTH_CLIENT_SECRET: ${{ secrets.REACT_APP_AUTH_CLIENT_SECRET }}
+          envkey_REACT_APP_AUTH_SCOPES: ${{ secrets.REACT_APP_AUTH_SCOPES }}
+          directory: next
+          file_name: .env
+
+      - name: Archive env file
+        uses: actions/upload-artifact@v3
+        with:
+          name: .env
+          path: |
+            next/.env
+
+      - name: Docker Build & Push Backend action to ttl.sh
+        uses: mr-smithers-excellent/docker-build-push@v5.6
+        with:
+          image: rwecho/scrapymall-next
+          dockerfile: next/Dockerfile
+          directory: next
+          registry: ttl.sh
+          addLatest: true
+          addTimestamp: false
+          labels: $(date +%s)
+
+
+      - name: Docker Build & Push Front action
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: rwecho/scrapymall-next
+          dockerfile: next/Dockerfile
+          directory: next
+          tags: $(date +%s), v1, latest
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_TOKEN }}
+          addLatest: true
+          addTimestamp: true
