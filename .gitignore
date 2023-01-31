@@ -1,4 +1,5 @@
 *.pyc
+misc
 spider/selenium
 spider/app_data
 web/public/app_data/tmall_2023-01-29.json
