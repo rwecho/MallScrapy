@@ -84,9 +84,6 @@ class ShangchengDownloaderMiddleware:
         self.browser = webdriver.Chrome(chrome_options=options)
         self.wait = WebDriverWait(self.browser, self.timeout)
 
-    def __del__(self):
-        self.browser.close()
-
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -144,6 +141,7 @@ class ShangchengDownloaderMiddleware:
         pass
 
     def spider_opened(self, spider):
+        spider.browser = self.browser
         spider.logger.info('Spider opened: %s' % spider.name)
 
 

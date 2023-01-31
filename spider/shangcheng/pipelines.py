@@ -46,3 +46,4 @@ class ShangchengPipeline:
 
     def close_spider(self, spider):
         self.client.close()
+        spider.browser.close()
