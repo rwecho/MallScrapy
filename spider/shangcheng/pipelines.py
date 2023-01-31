@@ -15,8 +15,8 @@ class ShangchengPipeline:
 
     def __init__(self):
         self.items = []
-        client = pymongo.MongoClient(MONGO_CONNECTION)
-        scrapy_db = client['scrapy_mall']                # 创建数据库
+        self.client = pymongo.MongoClient(MONGO_CONNECTION)
+        scrapy_db = self.client['scrapy_mall']                # 创建数据库
         self.coll = scrapy_db['products']              # 创建jd表格
         self.index = 0
         self.date = datetime.now()
