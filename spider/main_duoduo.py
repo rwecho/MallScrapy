@@ -1,4 +1,6 @@
 from shangcheng.spiders.jd import JdSpider
+from shangcheng.spiders.duoduo import DuoduoSpider
+from shangcheng.spiders.tmall import TmallSpider
 from scrapy.utils.project import get_project_settings
 from scrapy.crawler import CrawlerRunner
 from twisted.internet import reactor
@@ -17,7 +19,7 @@ def crawl_job():
 
     settings = get_project_settings()
     runner = CrawlerRunner(settings)
-    return runner.crawl(JdSpider)
+    return runner.crawl(DuoduoSpider)
 
 
 def schedule_next_crawl(null, sleep_time):
