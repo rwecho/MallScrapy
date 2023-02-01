@@ -1,5 +1,5 @@
-import clientPromise from '@/services/mongodb'
 import { NextApiRequest, NextApiResponse } from 'next'
+import clientPromise from '@/pages/api/services/mongodb'
 
 type Product = {}
 export default async function handler(
@@ -10,11 +10,26 @@ export default async function handler(
     const client = await clientPromise
     const db = client.db('scrapy_mall')
 
-    const { type, date } = req.query
+    const { type, date, keyword } = req.query
+    let filter = {}
+
+    if (type) {
+      filter = { type }
+    }
+
+    if (date) {
+      filter = { ...filter, date }
+    }
+
+    if (keyword) {
+      filter = { ...filter, keyword }
+    }
+
+    console.error(filter)
 
     const products = await db
       .collection('products')
-      .find({ type: type, creation_day: date })
+      .find(filter)
       .limit(50)
       .toArray()
     res.json(products)

@@ -6,111 +6,40 @@ import {
   SimpleGrid,
   useToast,
   Text,
-  Select,
   Link,
   Tooltip,
+  Button,
 } from '@chakra-ui/react'
 import { SingleDatepicker } from 'chakra-dayzed-datepicker'
-import moment from 'moment'
-import { ChangeEvent, useEffect, useState } from 'react'
 import { Column } from 'react-table'
-import { DefaultLayout } from 'src/components/layouts'
-import { DataTable } from '../DataTable'
+import {
+  DefaultLayout,
+  DataTable,
+  Select,
+  LoadingBox,
+} from '@/components/shared'
 import { FaArrowDown, FaArrowUp, FaLink } from 'react-icons/fa'
-
-type MallSelectProps = {
-  onChange?: (mall: string) => void
-  value?: string | undefined
-}
-const MallSelect = (props: MallSelectProps) => {
-  const { onChange, value } = props
-
-  const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    onChange && onChange(e.target.value)
-  }
-
-  return (
-    <Select onChange={handleChange} value={value}>
-      <option value="tmall">天猫</option>
-      <option value="jd">京东</option>
-      <option value="duoduo">拼多多</option>
-    </Select>
-  )
-}
-
-type ProductItem = {
-  index: number
-  url: string
-  image: string
-  name: string
-  price: string
-  store: string
-  evaluate_num: string
-  trend?: number
-}
+import { useAppDispatch, useAppSelector } from '@/store'
+import {
+  changeDate,
+  changeKeyword,
+  changeType,
+  executeQuery,
+} from '@/store/slices/homeSlice'
 
 export const Home = () => {
-  const [date, setDate] = useState(new Date())
-  const [mall, setMall] = useState('tmall')
-  const [items, setItems] = useState<ProductItem[]>([])
+  const {
+    isLoading,
+    selectedType,
+    selectedKeyword,
+    selectedDate,
+    keywords,
+    items,
+  } = useAppSelector((state) => state.home)
+  const dispatch = useAppDispatch()
   const toast = useToast()
-  const keywords = process.env.PRODUCT_KEYWORDS
 
-  const loadData = async (mall: string, date: Date) => {
-    let yestoday_result: ProductItem[] = []
-    try {
-      const yestoday_url = `/api/products?type=${mall}&date=${moment(date)
-        .add(-1, 'days')
-        .format('YYYY-MM-DD')}`
-      const yestoday_response = await fetch(yestoday_url)
-      yestoday_result = await yestoday_response.json()
-    } catch (error) {}
-
-    try {
-      const today_url = `/api/products?type=${mall}&date=${moment(date).format(
-        'YYYY-MM-DD'
-      )}`
-
-      const today_response = await fetch(today_url)
-      let today_result: ProductItem[] = await today_response.json()
-
-      if (yestoday_result.length > 0) {
-        for (let i = 0; i < today_result.length; i++) {
-          const item = today_result[i]
-
-          const yestoday_item = yestoday_result.find(
-            (o) => o.name === item.name
-          )
-
-          if (yestoday_item?.index === undefined) {
-            continue
-          }
-
-          item.trend = item.index - yestoday_item.index
-        }
-      }
-      setItems(today_result)
-      toast({
-        title: '提醒',
-        description: `加载成功, 共获取 ${today_result.length} 条数据`,
-        status: 'success',
-        duration: 9000,
-        isClosable: true,
-      })
-    } catch (error) {
-      setItems([])
-      toast({
-        title: '提醒',
-        description: '无数据',
-        status: 'error',
-        duration: 9000,
-        isClosable: true,
-      })
-    }
-  }
-  useEffect(() => {
-    loadData(mall, date)
-  }, [mall, date])
+  const product_keywords = process.env.NEXT_PUBLIC_PRODUCT_KEYWORDS
 
   const columns: Column<any>[] = [
     {
@@ -157,7 +86,7 @@ export const Home = () => {
       Cell: ({ cell }) => {
         const item = cell.row.original
         let color = ''
-        if (item.store.includes(keywords)) {
+        if (item.store.includes(product_keywords)) {
           color = 'teal.400'
         }
 
@@ -171,7 +100,7 @@ export const Home = () => {
         const item = cell.row.original
 
         let color = ''
-        if (item.store.includes(keywords)) {
+        if (item.store.includes(product_keywords)) {
           color = 'teal.400'
         }
 
@@ -194,42 +123,94 @@ export const Home = () => {
       accessor: 'evaluate_num',
     },
   ]
+
+  const mallTypeList = [
+    {
+      value: 'tmall',
+      text: '天猫',
+    },
+    {
+      value: 'jd',
+      text: '京东',
+    },
+
+    {
+      value: 'duoduo',
+      text: '拼多多',
+    },
+  ]
   return (
     <DefaultLayout>
-      <Card>
-        <CardHeader>
-          <SimpleGrid my={4} columns={{ base: 4, sm: 2 }} spacing={4}>
-            <HStack>
-              <Text whiteSpace={'nowrap'}>选择商城: </Text>
-              <MallSelect value={mall} onChange={setMall}></MallSelect>
-            </HStack>
-            <HStack>
-              <Text whiteSpace={'nowrap'}>选择时间: </Text>
-              <SingleDatepicker
-                name="date-input"
-                date={date}
-                onDateChange={setDate}
-                propsConfigs={{
-                  dayOfMonthBtnProps: {
-                    defaultBtnProps: {
-                      _hover: {
-                        background: 'teal.200',
+      <LoadingBox isLoading={isLoading}>
+        <Card>
+          <CardHeader>
+            <SimpleGrid my={4} columns={{ base: 1, md: 4 }} spacing={4}>
+              <HStack>
+                <Text whiteSpace={'nowrap'}>选择商城: </Text>
+                <Select
+                  items={mallTypeList}
+                  valueMember={(t) => t.value}
+                  textMember={(t) => t.text}
+                  value={selectedType}
+                  onChange={(item) => dispatch(changeType(item))}
+                ></Select>
+              </HStack>
+
+              <HStack>
+                <Text whiteSpace={'nowrap'}>关键字: </Text>
+                <Select
+                  items={keywords}
+                  valueMember={(t: string) => t}
+                  textMember={(t: string) => t}
+                  value={selectedKeyword}
+                  onChange={(item) => dispatch(changeKeyword(item))}
+                  placeholder="不限制"
+                ></Select>
+              </HStack>
+              <HStack>
+                <Text whiteSpace={'nowrap'}>选择时间: </Text>
+                <SingleDatepicker
+                  name="date-input"
+                  date={new Date(selectedDate)}
+                  onDateChange={(date) => {
+                    dispatch(changeDate(date.toISOString()))
+                  }}
+                  propsConfigs={{
+                    dayOfMonthBtnProps: {
+                      defaultBtnProps: {
+                        _hover: {
+                          background: 'teal.200',
+                        },
+                      },
+                      selectedBtnProps: {
+                        background: 'teal.400',
+                        color: 'white',
                       },
                     },
-                    selectedBtnProps: {
-                      background: 'teal.400',
-                      color: 'white',
-                    },
-                  },
-                }}
-              />
-            </HStack>
-          </SimpleGrid>
-        </CardHeader>
-        <CardBody>
-          <DataTable columns={columns} data={items}></DataTable>
-        </CardBody>
-      </Card>
+                  }}
+                />
+              </HStack>
+
+              <Button
+                onClick={() =>
+                  dispatch(
+                    executeQuery({
+                      type: selectedType,
+                      keyword: selectedKeyword,
+                      date: selectedDate,
+                    })
+                  )
+                }
+              >
+                查询
+              </Button>
+            </SimpleGrid>
+          </CardHeader>
+          <CardBody>
+            <DataTable columns={columns} data={items}></DataTable>
+          </CardBody>
+        </Card>
+      </LoadingBox>
     </DefaultLayout>
   )
 }
