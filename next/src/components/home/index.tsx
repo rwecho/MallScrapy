@@ -26,6 +26,7 @@ import {
   changeType,
   executeQuery,
 } from '@/store/slices/homeSlice'
+import { useEffect } from 'react'
 
 export const Home = () => {
   const {
@@ -38,6 +39,18 @@ export const Home = () => {
   } = useAppSelector((state) => state.home)
   const dispatch = useAppDispatch()
   const toast = useToast()
+
+  useEffect(() => {
+    dispatch(changeType(selectedType))
+
+    toast({
+      title: '提醒',
+      description: '加载关键字成功',
+      status: 'success',
+      duration: 9000,
+      isClosable: true,
+    })
+  }, [dispatch, selectedType, toast])
 
   const product_keywords = process.env.NEXT_PUBLIC_PRODUCT_KEYWORDS
 
@@ -139,6 +152,24 @@ export const Home = () => {
       text: '拼多多',
     },
   ]
+
+  const handleQuery = async () => {
+    await dispatch(
+      executeQuery({
+        type: selectedType,
+        keyword: selectedKeyword,
+        date: selectedDate,
+      })
+    ).unwrap()
+
+    toast({
+      title: '提醒',
+      description: '加载数据成功',
+      status: 'success',
+      duration: 9000,
+      isClosable: true,
+    })
+  }
   return (
     <DefaultLayout>
       <LoadingBox isLoading={isLoading}>
@@ -191,19 +222,7 @@ export const Home = () => {
                 />
               </HStack>
 
-              <Button
-                onClick={() =>
-                  dispatch(
-                    executeQuery({
-                      type: selectedType,
-                      keyword: selectedKeyword,
-                      date: selectedDate,
-                    })
-                  )
-                }
-              >
-                查询
-              </Button>
+              <Button onClick={handleQuery}>查询</Button>
             </SimpleGrid>
           </CardHeader>
           <CardBody>

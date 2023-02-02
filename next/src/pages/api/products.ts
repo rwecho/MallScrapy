@@ -25,8 +25,6 @@ export default async function handler(
       filter = { ...filter, keyword }
     }
 
-    console.error(filter)
-
     const products = await db
       .collection('products')
       .find(filter)

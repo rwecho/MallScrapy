@@ -103,7 +103,6 @@ export const homeSlice = createSlice({
     [executeQuery.fulfilled.toString()]: (state, action) => {
       state.isLoading = false
       state.items = action.payload.items
-      console.log(action)
     },
     [executeQuery.rejected.toString()]: (state, action) => {
       state.isLoading = false
