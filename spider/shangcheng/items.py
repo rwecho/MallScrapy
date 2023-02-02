@@ -10,6 +10,7 @@ class ShangchengItem(Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     name = Field()
+    keyword = Field()
     price = Field()
     store = Field()
     evaluate_num = Field()

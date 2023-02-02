@@ -2,25 +2,28 @@ import scrapy
 from scrapy import Request, Spider
 from shangcheng.items import ShangchengItem
 from shangcheng.settings import SEARCH_KEYWORDS
+import re
 
 
 class DuoduoSpider(scrapy.Spider):
     name = 'duoduo'
     allowed_domains = ['mobile.yangkeduo.com']
     keywords = SEARCH_KEYWORDS
-    start_urls = [
-        f'https://mobile.yangkeduo.com/search_result.html?search_key={keywords}']
+    keywords = [x.strip() for x in re.split('; |,', keywords)]
     mall_type = "duoduo"
 
     def start_requests(self):
-        for url in self.start_urls:
-            yield Request(url=url, callback=self.parse, meta={}, dont_filter=True)
+        for keyword in self.keywords:
+            start_url = f'https://mobile.yangkeduo.com/search_result.html?search_key={keyword}'
+            yield Request(url=start_url, callback=self.parse, meta={"keyword": keyword}, dont_filter=True)
 
     def parse(self, response):
         products = response.xpath('.//div[@class="_3glhOBhU"]')
+        keyword = response.meta["keyword"]
+
         for product in products:
             item = ShangchengItem()
-
+            item['keyword'] = keyword
             path = product.xpath(
                 './/div/div/div/div/div[position()>0]')
 

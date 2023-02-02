@@ -19,26 +19,23 @@ class ShangchengPipeline:
         scrapy_db = self.client['scrapy_mall']                # 创建数据库
         self.coll = scrapy_db['products']              # 创建jd表格
         self.index = 0
-        self.date = datetime.now()
+        self.datetime = datetime.now()
 
     def open_spider(self, spider):
         _type = spider.mall_type
-        keywords = spider.keywords
-        day = self.date.strftime("%Y-%m-%d")
-        self.coll.delete_many({"keywords": keywords,
-                               "type": _type,
-                               'creation_day': day, })
+        date = self.datetime.strftime("%Y-%m-%d")
+        self.coll.delete_many({
+            "type": _type,
+            'creation_day': date, })
 
     def process_item(self, item, spider):
         _type = spider.mall_type
-        keywords = spider.keywords
-        day = self.date.strftime("%Y-%m-%d")
+        date = self.datetime.strftime("%Y-%m-%d")
 
         item = {**dict(item),
                 'index': self.index,
-                'creation': self.date,
-                'creation_day': day,
-                'keywords': keywords,
+                'creation': self.datetime,
+                'creation_date': date,
                 "type": _type}
         self.coll.insert_one(dict(item))
         self.index += 1
