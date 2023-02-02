@@ -13,7 +13,7 @@ export default async function handler(
 
     const keywords = await db
       .collection('products')
-      .distinct('keywords', { type: type })
+      .distinct('keyword', { type: type })
     res.json(keywords)
   } catch (error) {
     console.error(error)
