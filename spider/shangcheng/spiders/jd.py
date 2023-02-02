@@ -21,8 +21,9 @@ class JdSpider(Spider):
     def parse(self, response):
         products = response.xpath('.//ul[@class="gl-warp clearfix"]/li')
         keyword = response.meta["keyword"]
-        for product in products:
+        for index, product in enumerate(products):
             item = ShangchengItem()
+            item['index'] = index
             item['keyword'] = keyword
             item['url'] = ''.join(product.xpath(
                 './/div[@class="p-img"]/a/@href').extract()).strip()

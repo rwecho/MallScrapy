@@ -21,8 +21,9 @@ class DuoduoSpider(scrapy.Spider):
         products = response.xpath('.//div[@class="_3glhOBhU"]')
         keyword = response.meta["keyword"]
 
-        for product in products:
+        for index, product in enumerate(products):
             item = ShangchengItem()
+            item['index'] = index
             item['keyword'] = keyword
             path = product.xpath(
                 './/div/div/div/div/div[position()>0]')

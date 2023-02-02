@@ -22,8 +22,9 @@ class TmallSpider(scrapy.Spider):
             './/div[@class="grid g-clearfix"]//div[contains(@class, "item J_MouserOnverReq") and not(contains(@class, "item-ad"))]')
         keyword = response.meta["keyword"]
 
-        for product in products:
+        for index, product in enumerate(products):
             item = ShangchengItem()
+            item['index'] = index
             item['keyword'] = keyword
             item['url'] = ''.join(product.xpath(
                 './/div[@class="pic"]/a/@href').extract()).strip()
