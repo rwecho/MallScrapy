@@ -1,4 +1,4 @@
-import clientPromise from '@/pages/api/services/mongodb'
+import clientPromise from '@/services/backend/mongodb'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(

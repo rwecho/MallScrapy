@@ -15,8 +15,7 @@ RUN yarn install --production
 
 COPY . /app
 
-RUN yarn add --dev typescript @types/node
-# && yarn build
+RUN yarn add --dev typescript @types/node && yarn build
 
 EXPOSE 80
-CMD [ "yarn", "dev" ]
+CMD [ "yarn", "start" ]

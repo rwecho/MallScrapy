@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import clientPromise from '@/pages/api/services/mongodb'
+import clientPromise from '@/services/backend/mongodb'
 
 type Product = {}
 export default async function handler(

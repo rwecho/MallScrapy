@@ -154,6 +154,7 @@ export const Home = () => {
   ]
 
   const handleQuery = async () => {
+    console.log(`product keywords: {product_keywords}`)
     await dispatch(
       executeQuery({
         type: selectedType,

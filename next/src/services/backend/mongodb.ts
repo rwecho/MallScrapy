@@ -7,6 +7,8 @@ if (!process.env.MONGODB_URI) {
 const uri = process.env.MONGODB_URI
 const options = {}
 
+console.log(`mongo uri: ${uri}`)
+
 let client
 let clientPromise: Promise<MongoClient>
 
