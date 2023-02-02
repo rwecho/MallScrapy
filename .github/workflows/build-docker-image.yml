@@ -19,6 +19,7 @@ jobs:
         with:
           envkey_MONGODB_URI: ${{ secrets.MONGODB_URI }}
           envkey_PRODUCT_KEYWORDS: 桑尚
+          envkey_NEXT_PUBLIC_TITLE: 关键字采集
           directory: next
           file_name: .env
 
