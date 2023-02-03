@@ -3,23 +3,22 @@ from shangcheng.spiders.duoduo import DuoduoSpider
 from shangcheng.spiders.tmall import TmallSpider
 from scrapy.utils.project import get_project_settings
 from scrapy.crawler import CrawlerRunner
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 import os
 from scrapy.utils.log import configure_logging
 
+settings_file_path = 'shangcheng.settings'
+os.environ.setdefault('SCRAPY_SETTINGS_MODULE', settings_file_path)
 
+settings = get_project_settings()
+configure_logging(settings)
+runner = CrawlerRunner(settings)
+
+
+@defer.inlineCallbacks
 def crawl_job():
-    """
-    Job to start spiders.
-    Return Deferred, which will execute after crawl has completed.
-    """
-    settings_file_path = 'shangcheng.settings'
-    os.environ.setdefault('SCRAPY_SETTINGS_MODULE', settings_file_path)
-    configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
-
-    settings = get_project_settings()
-    runner = CrawlerRunner(settings)
-    return runner.crawl(JdSpider)
+    yield runner.crawl(JdSpider)
+    yield runner.crawl(TmallSpider)
 
 
 def schedule_next_crawl(null, sleep_time):

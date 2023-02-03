@@ -71,18 +71,6 @@ class ShangchengDownloaderMiddleware:
     # passed objects.
     def __init__(self) -> None:
         self.timeout = 60
-        options = webdriver.ChromeOptions()
-        dir_path = os.getcwd()
-        options.add_argument(f"user-data-dir={dir_path}/selenium")
-        # 设置中文
-        # options.add_argument('lang=zh_CN.UTF-8')
-        # 设置无图加载，提高速度
-        # prefs = {"profile.managed_default_content_settings.images": 2}
-        # options.add_experimental_option("prefs", prefs)
-        # 设置无头浏览器
-        # options.add_argument('--headless')
-        self.browser = webdriver.Chrome(chrome_options=options)
-        self.wait = WebDriverWait(self.browser, self.timeout)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -141,6 +129,24 @@ class ShangchengDownloaderMiddleware:
         pass
 
     def spider_opened(self, spider):
+        options = webdriver.ChromeOptions()
+        dir_path = os.getcwd()
+        options.add_argument(f"user-data-dir={dir_path}/selenium")
+        # 设置中文
+        # options.add_argument('lang=zh_CN.UTF-8')
+        # 设置无图加载，提高速度
+        # prefs = {"profile.managed_default_content_settings.images": 2}
+        # options.add_experimental_option("prefs", prefs)
+        # 设置无头浏览器
+        # options.add_argument('--headless')
+
+        # this is to fixed multiple running spiders
+        # https://stackoverflow.com/questions/56637973/how-to-fix-selenium-devtoolsactiveport-file-doesnt-exist-exception-in-python
+        # options.add_argument("--remote-debugging-port=9221")
+
+        self.browser = webdriver.Chrome(chrome_options=options)
+        self.wait = WebDriverWait(self.browser, self.timeout)
+
         spider.browser = self.browser
         spider.logger.info('Spider opened: %s' % spider.name)
 
