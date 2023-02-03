@@ -10,7 +10,7 @@ export default async function handler(
     const client = await clientPromise
     const db = client.db('scrapy_mall')
 
-    const { type, date, keyword } = req.query
+    const { type, date, keyword, sort } = req.query
     let filter = {}
 
     if (type) {
@@ -23,6 +23,10 @@ export default async function handler(
 
     if (keyword) {
       filter = { ...filter, keyword }
+    }
+
+    if (sort === '销量') {
+      filter = { ...filter, sort }
     }
 
     const products = await db

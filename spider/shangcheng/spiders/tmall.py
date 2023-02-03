@@ -41,13 +41,13 @@ class TmallSpider(scrapy.Spider):
                 './/div[@class="pic"]/a/img/@src').extract()).strip()
             item['name'] = ''.join(product.xpath(
                 './/div[contains(@class, "ctx-box")]//div[contains(@class,"title")]/descendant::*/text()').extract()).strip()
-            item['price'] = ''.join(product.xpath(
-                './/div[contains(@class, "ctx-box")]//div[@class="deal-cnt"]/text()').extract()).strip()
-            item['store'] = ''.join(product.xpath(
-                './/div[contains(@class, "ctx-box")]//div[contains(@class,"shop")]/a/span/text()').extract()).strip()
-            item['evaluate_num'] = \
+            item['price'] = \
                 ''.join(product.xpath('.//div[contains(@class, "ctx-box")]//div[contains(@class,"price")]/span/text()')
                         .extract()).strip() +\
                 ''.join(product.xpath('.//div[contains(@class, "ctx-box")]//div[contains(@class, "price")]/strong/text()')
                         .extract()).strip()
+            item['store'] = ''.join(product.xpath(
+                './/div[contains(@class, "ctx-box")]//div[contains(@class,"shop")]/a/span/text()').extract()).strip()
+            item['evaluate_num'] = ''.join(product.xpath(
+                './/div[contains(@class, "ctx-box")]//div[@class="deal-cnt"]/text()').extract()).strip()
             yield item

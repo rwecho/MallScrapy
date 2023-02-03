@@ -9,6 +9,7 @@ import {
   Link,
   Tooltip,
   Button,
+  Box,
 } from '@chakra-ui/react'
 import { SingleDatepicker } from 'chakra-dayzed-datepicker'
 import { Column } from 'react-table'
@@ -24,9 +25,9 @@ import {
   changeDate,
   changeKeyword,
   changeType,
+  changeSort,
   executeQuery,
 } from '@/store/slices/homeSlice'
-import { useEffect } from 'react'
 
 export const Home = () => {
   const {
@@ -34,23 +35,11 @@ export const Home = () => {
     selectedType,
     selectedKeyword,
     selectedDate,
-    keywords,
+    selectedSort,
     items,
   } = useAppSelector((state) => state.home)
   const dispatch = useAppDispatch()
   const toast = useToast()
-
-  useEffect(() => {
-    dispatch(changeType(selectedType))
-
-    toast({
-      title: '提醒',
-      description: '加载关键字成功',
-      status: 'success',
-      duration: 9000,
-      isClosable: true,
-    })
-  }, [dispatch, selectedType, toast])
 
   const product_keywords = process.env.NEXT_PUBLIC_PRODUCT_KEYWORDS
 
@@ -153,6 +142,26 @@ export const Home = () => {
     },
   ]
 
+  const sorts = ['综合', '销量']
+  const keywords = [
+    '防晒口罩',
+    '防晒面罩',
+    '防晒衣',
+    '防晒袖套',
+    '防晒服',
+    '渔夫帽',
+    '贝壳帽',
+    '空顶帽',
+    '防晒手套',
+    '定型枕',
+    '哺乳枕',
+    '护肚围',
+    '婴儿抱被',
+    '婴儿睡袋',
+    '婴儿喂奶袖套',
+    '婴儿睡衣',
+  ]
+
   const handleQuery = async () => {
     console.log(`product keywords: {product_keywords}`)
     await dispatch(
@@ -160,6 +169,7 @@ export const Home = () => {
         type: selectedType,
         keyword: selectedKeyword,
         date: selectedDate,
+        sort: selectedSort,
       })
     ).unwrap()
 
@@ -174,9 +184,9 @@ export const Home = () => {
   return (
     <DefaultLayout>
       <LoadingBox isLoading={isLoading}>
-        <Card>
+        <Card display={'grid'}>
           <CardHeader>
-            <SimpleGrid my={4} columns={{ base: 1, md: 4 }} spacing={4}>
+            <SimpleGrid my={4} columns={{ base: 1, sm: 2, md: 4 }} spacing={4}>
               <HStack>
                 <Text whiteSpace={'nowrap'}>选择商城: </Text>
                 <Select
@@ -197,6 +207,16 @@ export const Home = () => {
                   value={selectedKeyword}
                   onChange={(item) => dispatch(changeKeyword(item))}
                   placeholder="不限制"
+                ></Select>
+              </HStack>
+              <HStack>
+                <Text whiteSpace={'nowrap'}>排序: </Text>
+                <Select
+                  items={sorts}
+                  valueMember={(t: string) => t}
+                  textMember={(t: string) => t}
+                  value={selectedSort}
+                  onChange={(item) => dispatch(changeSort(item))}
                 ></Select>
               </HStack>
               <HStack>
@@ -222,12 +242,21 @@ export const Home = () => {
                   }}
                 />
               </HStack>
-
-              <Button onClick={handleQuery}>查询</Button>
             </SimpleGrid>
+            <HStack>
+              <Button
+                onClick={handleQuery}
+                ml="auto"
+                w={{ base: 'full', md: 'unset' }}
+              >
+                查询
+              </Button>
+            </HStack>
           </CardHeader>
-          <CardBody>
-            <DataTable columns={columns} data={items}></DataTable>
+          <CardBody display={'flex'} overflowX={'auto'} w={'100%'}>
+            <Box flexShrink={0}>
+              <DataTable columns={columns} data={items}></DataTable>
+            </Box>
           </CardBody>
         </Card>
       </LoadingBox>
