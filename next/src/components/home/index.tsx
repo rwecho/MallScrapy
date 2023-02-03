@@ -253,7 +253,7 @@ export const Home = () => {
               </Button>
             </HStack>
           </CardHeader>
-          <CardBody display={'flex'} overflowX={'auto'} w={'100%'}>
+          <CardBody overflowX={'auto'} w={'100%'}>
             <Box flexShrink={0}>
               <DataTable columns={columns} data={items}></DataTable>
             </Box>
