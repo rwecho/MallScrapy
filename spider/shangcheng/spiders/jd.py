@@ -16,14 +16,22 @@ class JdSpider(Spider):
     def start_requests(self):
         for keyword in self.keywords:
             start_url = f'https://search.jd.com/Search?keyword={keyword}&enc=utf-8'
-            yield Request(url=start_url, callback=self.parse, meta={"keyword": keyword}, dont_filter=True)
+            yield Request(url=start_url, callback=self.parse, meta={"keyword": keyword, "sort": "综合"}, dont_filter=True)
+
+        for keyword in self.keywords:
+            # 按照销量排序
+            start_url = f'https://search.jd.com/Search?keyword={keyword}&enc=utf-8&psort=3'
+            yield Request(url=start_url, callback=self.parse, meta={"keyword": keyword, "sort": "销量"}, dont_filter=True)
 
     def parse(self, response):
         products = response.xpath('.//ul[@class="gl-warp clearfix"]/li')
         keyword = response.meta["keyword"]
+        sort = response.meta["sort"]
+
         for index, product in enumerate(products):
             item = ShangchengItem()
             item['index'] = index
+            item['sort'] = sort
             item['keyword'] = keyword
             item['url'] = ''.join(product.xpath(
                 './/div[@class="p-img"]/a/@href').extract()).strip()

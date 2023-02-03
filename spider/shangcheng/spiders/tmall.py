@@ -14,18 +14,26 @@ class TmallSpider(scrapy.Spider):
 
     def start_requests(self):
         for keyword in self.keywords:
+            # 按综合排序
             start_url = f'https://s.taobao.com/search?q={keyword}'
-            yield Request(url=start_url, callback=self.parse, meta={"keyword": keyword}, dont_filter=True)
+            yield Request(url=start_url, callback=self.parse, meta={"keyword": keyword, "sort": "综合"}, dont_filter=True)
+
+        for keyword in self.keywords:
+            # 按照销量排序
+            start_url = f'https://s.taobao.com/search?q={keyword}&sort=sale-desc'
+            yield Request(url=start_url, callback=self.parse, meta={"keyword": keyword, "sort": "销量"}, dont_filter=True)
 
     def parse(self, response):
         products = response.xpath(
             './/div[@class="grid g-clearfix"]//div[contains(@class, "item J_MouserOnverReq") and not(contains(@class, "item-ad"))]')
         keyword = response.meta["keyword"]
+        sort = response.meta["sort"]
 
         for index, product in enumerate(products):
             item = ShangchengItem()
             item['index'] = index
             item['keyword'] = keyword
+            item['sort'] = sort
             item['url'] = ''.join(product.xpath(
                 './/div[@class="pic"]/a/@href').extract()).strip()
             # 图片的获取不稳定, 因为它是可见后才有具体的地址
