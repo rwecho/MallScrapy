@@ -1,8 +1,8 @@
 import { MallType } from '.'
 
-export const getKeywords = async (type: MallType) => {
+export const getKeywords = async () => {
   try {
-    const url = `/api/keywords?type=${type}`
+    const url = `/api/keywords?type=jd`
     const response = await fetch(url)
 
     if (response.status >= 300) {

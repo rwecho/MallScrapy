@@ -26,12 +26,15 @@ import {
   changeKeyword,
   changeType,
   changeSort,
+  intialize,
   executeQuery,
 } from '@/store/slices/homeSlice'
+import { useEffect } from 'react'
 
 export const Home = () => {
   const {
     isLoading,
+    keywords,
     selectedType,
     selectedKeyword,
     selectedDate,
@@ -143,24 +146,13 @@ export const Home = () => {
   ]
 
   const sorts = ['综合', '销量']
-  const keywords = [
-    '防晒口罩',
-    '防晒面罩',
-    '防晒衣',
-    '防晒袖套',
-    '防晒服',
-    '渔夫帽',
-    '贝壳帽',
-    '空顶帽',
-    '防晒手套',
-    '定型枕',
-    '哺乳枕',
-    '护肚围',
-    '婴儿抱被',
-    '婴儿睡袋',
-    '婴儿喂奶袖套',
-    '婴儿睡衣',
-  ]
+
+  useEffect(() => {
+    const loadData = () => {
+      dispatch(intialize())
+    }
+    loadData()
+  }, [dispatch])
 
   const handleQuery = async () => {
     console.log(`product keywords: {product_keywords}`)

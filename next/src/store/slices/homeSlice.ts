@@ -1,9 +1,10 @@
-import { getProducts, MallType, ProductItem } from '@/services'
+import { getKeywords, getProducts, MallType, ProductItem } from '@/services'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import moment from 'moment'
 
 const initialState = {
   items: [] as ProductItem[],
+  keywords: [] as string[],
   selectedType: 'jd' as MallType,
   types: ['tmall', 'jd', 'duoduo'] as MallType[],
   selectedKeyword: '',
@@ -62,6 +63,14 @@ export const executeQuery = createAsyncThunk<{}, ExecuteQueryInput>(
   }
 )
 
+export const intialize = createAsyncThunk<{}, void>(
+  'home/intialize',
+  async (_) => {
+    const keywords = await getKeywords()
+    return { keywords }
+  }
+)
+
 export const homeSlice = createSlice({
   name: 'home',
   initialState,
@@ -88,6 +97,17 @@ export const homeSlice = createSlice({
       state.items = action.payload.items
     },
     [executeQuery.rejected.toString()]: (state, action) => {
+      state.isLoading = false
+      state.error = action.error.message
+    },
+    [intialize.pending.toString()]: (state) => {
+      state.isLoading = true
+    },
+    [intialize.fulfilled.toString()]: (state, action) => {
+      state.isLoading = false
+      state.keywords = action.payload.keywords
+    },
+    [intialize.rejected.toString()]: (state, action) => {
       state.isLoading = false
       state.error = action.error.message
     },
