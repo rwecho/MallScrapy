@@ -18,7 +18,7 @@ export default async function handler(
     }
 
     if (date) {
-      filter = { ...filter, date }
+      filter = { ...filter, creation_date: date }
     }
 
     if (keyword) {
@@ -29,6 +29,7 @@ export default async function handler(
       filter = { ...filter, sort }
     }
 
+    console.log('Product filter: ' + JSON.stringify(filter))
     const products = await db
       .collection('products')
       .find(filter)

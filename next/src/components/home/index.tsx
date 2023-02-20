@@ -127,6 +127,10 @@ export const Home = () => {
       Header: '数量(评价数|付款数|已拼数)',
       accessor: 'evaluate_num',
     },
+    {
+      Header: '采集时间',
+      accessor: 'creation_date',
+    },
   ]
 
   const mallTypeList = [
@@ -167,8 +171,8 @@ export const Home = () => {
 
     toast({
       title: '提醒',
-      description: '加载数据成功',
-      status: 'success',
+      description: `加载数据成功, 共 ${items.length} 条数据`,
+      status: items.length === 0 ? 'warning' : 'success',
       duration: 9000,
       isClosable: true,
     })

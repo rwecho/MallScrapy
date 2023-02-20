@@ -23,7 +23,7 @@ export const getProducts = async ({
   sort?: string
 }) => {
   try {
-    const url = `/api/products?type=${type}&creation_date=${date}&keyword=${keyword}&sort=${sort}`
+    const url = `/api/products?type=${type}&date=${date}&keyword=${keyword}&sort=${sort}`
     const response = await fetch(url)
 
     if (response.status >= 300) {
